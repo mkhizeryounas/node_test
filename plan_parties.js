@@ -5,6 +5,8 @@ const fs = require('fs');
 let members = require('./members.json');
 
 let interests_list = {};
+let departments = [];
+let titles = [];
 
 String.prototype.capitalize = function() {
   return this.charAt(0).toUpperCase() + this.slice(1);
@@ -91,6 +93,8 @@ exports.plan_parties = async function() {
         interests_list[e2.topic] = 1;
       }
     });
+    if (!departments.includes(e.department)) departments.push(e.department);
+    if (!titles.includes(e.title)) departments.push(e.titledepartments);
     return e;
   });
   interests_list = Object.entries(interests_list).map(([key, value]) => {
@@ -114,9 +118,9 @@ exports.plan_parties = async function() {
   members.map((e, key) => {
     let data = [
       e.level,
-      // e.department,
+      departments.indexOf(e.department),
       e.numEmployees,
-      // e.title,
+      titles.indexOf(e.title),
       e.gender === 'M' ? 1 : 2,
       personality[e.personality]
     ];
@@ -129,7 +133,6 @@ exports.plan_parties = async function() {
   });
   let member_hash_table_tmp = { ...member_hash_table };
   let planedParties = await planParties(member_hash_table_tmp);
-  // console.log('planedParties', planedParties);
   const partyFileName = 'suggested_dinners.md';
   // Empty file
   fs.writeFileSync(partyFileName, '');
